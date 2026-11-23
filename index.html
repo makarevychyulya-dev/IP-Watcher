@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Пошук порушень прав на торговельну марку</title>
+<meta name="description" content="Автоматизований пошук в інтернеті можливих порушень прав на торговельні марки за назвою, зображенням і класом МКТП.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Пошук порушень прав на торговельну марку</h1>
+    <p class="lede">Вкажіть словесне позначення, зображення знака або обидва й оберіть клас МКТП. Система перегляне сайти, маркетплейси й соцмережі та пояснить, чому кожен знайдений збіг може бути порушенням.</p>
+  </header>
+
+  <main class="layout">
+    <section class="sheet" aria-label="Параметри пошуку">
+      <fieldset class="modes" id="modes">
+        <legend class="sr">Спосіб пошуку</legend>
+        <label class="mode"><input type="radio" name="mode" value="word" checked><span>Словесне</span></label>
+        <label class="mode"><input type="radio" name="mode" value="image"><span>Зображення</span></label>
+        <label class="mode"><input type="radio" name="mode" value="combo"><span>Комбінований</span></label>
+      </fieldset>
+      <p class="mode-note" id="modeNote"></p>
+
+      <div class="field" id="fWord">
+        <span class="inid" aria-hidden="true">(540)</span>
+        <div>
+          <label class="lbl" for="word">Словесне позначення</label>
+          <input id="word" type="text" autocomplete="off" spellcheck="false" maxlength="100" placeholder="Наприклад: Сонячна долина">
+          <p class="hint">Так, як воно зареєстроване або використовується.</p>
+        </div>
+      </div>
+
+      <div class="field" id="fImage" hidden>
+        <span class="inid" aria-hidden="true">(540)</span>
+        <div>
+          <span class="lbl" id="imgLbl">Зображення знака</span>
+          <label class="drop" id="drop">
+            <input id="file" class="sr" type="file" accept="image/png,image/jpeg,image/webp,image/gif" aria-labelledby="imgLbl">
+            <span id="dropEmpty"><strong>Оберіть файл</strong> або перетягніть його сюди<br><small>PNG, JPG, WebP або GIF до 10 МБ</small></span>
+            <img id="preview" alt="Завантажене зображення знака" hidden>
+          </label>
+          <button type="button" class="link-btn" id="clearImg" hidden>Прибрати зображення</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="inid" aria-hidden="true">(511)</span>
+        <div>
+          <span class="lbl" id="clsLbl">Клас МКТП</span>
+          <div class="chosen" id="chosen"></div>
+          <input id="clsSearch" type="search" autocomplete="off" placeholder="Номер або товар: 30, кава, одяг" aria-label="Знайти клас МКТП">
+          <ul class="cls-list" id="clsList" aria-labelledby="clsLbl"></ul>
+          <p class="hint" id="clsHint"></p>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="inid" aria-hidden="true"></span>
+        <div>
+          <label class="lbl" for="region">Де шукати</label>
+          <select id="region"></select>
+        </div>
+      </div>
+
+      <details class="extra">
+        <summary>Офіційні сайти та авторизовані продавці</summary>
+        <textarea id="allowed" rows="3" maxlength="3000" placeholder="brand.ua&#10;rozetka.com.ua/seller/brand" aria-label="Офіційні сайти та авторизовані продавці"></textarea>
+        <p class="hint">Один на рядок. Ці адреси не потраплять у перелік порушень, а решту продавців система перевірить як можливо неавторизованих.</p>
+      </details>
+
+      <div class="field" id="fPassword" hidden>
+        <span class="inid" aria-hidden="true"></span>
+        <div>
+          <label class="lbl" for="password">Пароль доступу</label>
+          <input id="password" type="password" autocomplete="current-password">
+          <p class="hint">Сайт захищено паролем. Його можна отримати у власника сайту.</p>
+        </div>
+      </div>
+
+      <p class="form-error" id="formError" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" class="primary" id="go" disabled>Шукати збіги</button>
+        <button type="button" class="secondary" id="stop" hidden>Зупинити пошук</button>
+      </div>
+    </section>
+
+    <section class="results" id="results" aria-live="polite">
+      <div class="intro" id="intro">
+        <h2>Що шукає система</h2>
+        <dl class="kinds">
+          <div><dt>Ідентичні та схожі торговельні марки</dt><dd>Назви й логотипи, які збігаються з вашими або можуть сплутатися з ними за звучанням, написанням, значенням чи дизайном.</dd></div>
+          <div><dt>Використання третіми особами</dt><dd>Назви компаній і магазинів, доменні імена, сторінки в соцмережах, реклама.</dd></div>
+          <div><dt>Пропозиції на сайтах і маркетплейсах</dt><dd>Товари й послуги під вашим або схожим позначенням, зокрема можливі підробки.</dd></div>
+          <div><dt>Можливі неавторизовані продавці</dt><dd>Ті, хто продає товар під вашою маркою, але не входить до переліку офіційних продавців.</dd></div>
+          <div><dt>Інші можливі порушення</dt><dd>Схожа упаковка, копіювання фірмового стилю, використання марки в рекламі конкурентів.</dd></div>
+        </dl>
+        <p class="hint">Пошук триває 1–2 хвилини. Для кожного збігу ви отримаєте посилання на сторінку й пояснення, чому він може порушувати права.</p>
+      </div>
+
+      <div id="run" hidden>
+        <div class="spec" id="spec"></div>
+        <ul class="steps" id="steps"></ul>
+        <div class="visual" id="visual" hidden></div>
+        <div class="res-head" id="resHead" hidden>
+          <div>
+            <h2 class="res-title" id="resTitle"></h2>
+            <p class="res-break" id="resBreak"></p>
+          </div>
+          <div class="tools">
+            <div class="seg" id="riskSeg" role="group" aria-label="Фільтр за ризиком"></div>
+            <select id="catFilter" aria-label="Фільтр за типом"></select>
+            <button type="button" class="small-btn" id="csvBtn">Завантажити CSV</button>
+            <button type="button" class="small-btn" id="copyBtn">Копіювати перелік</button>
+          </div>
+        </div>
+        <ul class="matches" id="matches"></ul>
+        <p class="empty" id="empty" hidden></p>
+        <div class="notes" id="notes" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><p id="version"></p></footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

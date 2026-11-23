@@ -1,0 +1,15 @@
+# Опис сервісу для Render: дозволяє розгорнути сайт за одним посиланням.
+# Render прочитає цей файл і попросить лише ключ API та пароль.
+services:
+  - type: web
+    name: trademark-watch
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ACCESS_PASSWORD
+        sync: false
